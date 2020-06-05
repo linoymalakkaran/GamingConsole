@@ -1,0 +1,82 @@
+﻿@model IEnumerable<GamingConsole.Models.BasketBallBoard>
+
+<div id="mainContainer" data-lang="en" class="outer-wrap">
+    <div class="inner-wrap">
+        <div class="container mb-3" dir="ltr">
+            <div class="row">
+                <div class="col-sm-12 my-3">
+                    <div class="row">
+                        <!-- Console section starts -->
+                        @foreach (var item in Model)
+                        {
+                            var dynamicRowId = "dataModel_" + item.ConsoleNumber;
+                            <div id="@dynamicRowId" class="col-sm-12">
+                                <div class="console-sec vertical-type p-3 mb-3">
+                                    <div class="row">
+                                        <div class="col-sm-2">
+                                            <h3 class="p-3">Console Number #@item.ConsoleNumber</h3>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="row">
+                                                <h3 class="p-3">Console Name #@item.ConsoleName</h3>
+                                            </div>
+                                            <div class="row">
+                                                <h5 class="p-3">Console Status #@item.Status</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <div class="score-section p-3 mb-3">
+                                                <div class="row">
+                                                    <div class="col-sm-3">
+                                                        Score
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        <span>@item.TeamOneScore - @item.TeamTwoScore</span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3 btnf">
+                                            @Html.ActionLink("Open New Console", "New", "BasketBallConsole",
+                                                new { ConsoleNumber = item.ConsoleNumber },
+                                                new { @class = "btn btn-primary", role="button", target = "_blank" })
+                                            <br />
+                                            @Html.ActionLink("Open Old Console", "Old", "BasketBallConsole",
+                                               new { ConsoleNumber = item.ConsoleNumber },
+                                               new { @class = "btn btn-primary", role="button", target = "_blank" })
+                                            <br />
+                                            <button class="btn btn-primary" onclick="HttpPost('Activate', @item.ConsoleNumber)">Activate Console</button>
+                                            <button class="btn btn-primary" onclick="HttpPost('DeActivate', @item.ConsoleNumber)">De-Activate Console</button>
+                                            <button class="btn btn-light" onclick="HttpPost('ResetScores', @item.ConsoleNumber)">Reset Scores</button>
+                                            <button class="btn btn-danger" onclick="HttpPost('Delete', @item.ConsoleNumber)">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Console section ends -->
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function HttpPost(actionName, consoleNumber) {
+        var data = {
+            consoleNumber: consoleNumber
+        };
+        $.ajax({
+            url: '/MainBoard/' + actionName,
+            contentType: 'application/json ; charset:utf-8',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify(data),
+            success: function (result) {
+                console.log(result);
+            }
+        });
+    }
+</script>

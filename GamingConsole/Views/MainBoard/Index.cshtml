@@ -1,0 +1,179 @@
+﻿@model  GamingConsole.Models.BasketBallBoard
+@{
+    ViewBag.Title = "Main Board";
+}
+
+<h2>Main Board</h2>
+
+<div class="alert alert-primary" role="alert" style="display:none;">
+    <span id="UpdateTargetId"></span>
+</div>
+
+@using (Ajax.BeginForm("CreateTeam", FormMethod.Post, new AjaxOptions()
+{
+    OnSuccess = "OnSuccess",
+    OnFailure = "OnFailure"
+    //InsertionMode = InsertionMode.Replace,
+    //UpdateTargetId = "dane"
+}))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Create Console (Team)</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.ConsoleNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.ConsoleNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ConsoleNumber, "Console Number is mandatory", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ConsoleName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ConsoleName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.ConsoleName, "Console Name is mandatory", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TeamOneScore, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TeamOneScore, new
+                {
+                    htmlAttributes = new
+                    {
+                       @class = "form-control",
+                       disabled = "disabled",
+                       @Value = "0"
+                    }
+                })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TeamTwoScore, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TeamTwoScore, new
+                {
+                    htmlAttributes = new
+                    {
+                       @class = "form-control",
+                       disabled = "disabled",
+                       @Value = "0"
+                    }
+                })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Status, new
+                {
+                    htmlAttributes = new
+                    {
+                        @class = "form-control",
+                        disabled = "disabled",
+                        @Value = "NotActive"
+                    }
+                })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create Team" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<br />
+<br />
+<h2>Live score board</h2>
+<hr />
+
+<div id="dataModel">
+    <h2 class="btn alert-primary">Loading.........................</h2>
+</div>
+
+@section JavaScript{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script type="text/javascript">
+        $(function () {
+            var hubNotify = $.connection.mainBoardHub;
+
+            $.connection.hub.start().done(function () {
+                getAll();
+            });
+
+            hubNotify.client.PushDataToMainBoard = function () {
+                console.log('Push Data To MainBoard');
+                getAll();
+            };
+
+            hubNotify.client.PullDataFromClient = function (consoleNumber) {
+                console.log('Pull Data From Client To MainBoard by console number: ' + consoleNumber);
+                PullDataToMainBoard(consoleNumber);
+                //getAll();
+            };
+
+        });
+
+        function OnSuccess(data) {
+            if (data.status == "500") {
+                alert(data.message);
+                return;
+            }
+            console.log('HTTP Status Code: ' + data.param1 + "  " + data.param2);
+            if (confirm("Do you want to open new console ? If 'Yes' new tab will be open...")) {
+                // Start new console
+                var url = window.location.origin + '/BasketBallConsole/New?consoleNumber=' + data.mainBoard.ConsoleNumber;
+                window.open(url);
+            } else {
+                showMessage(data.message);
+            }
+
+        }
+
+        function OnFailure(data) {
+            console.log('HTTP Status Code: ' + data.param1 + '  Error Message: ' + data.param2);
+            alert('Error while creating team console...!');
+        }
+
+        function getAll() {
+            var model = $('#dataModel');
+            $.ajax({
+                url: '/MainBoard/GetMainBoardData',
+                contentType: 'application/html ; charset:utf-8',
+                type: 'GET',
+                dataType: 'html',
+                success: function (result) { model.empty().append(result); }
+            });
+        }
+
+        function PullDataToMainBoard(consoleNumber) {
+            var model = $('#dataModel_' + consoleNumber);
+            $.ajax({
+                url: '/MainBoard/PullDataToMainBoard?consoleNumber=' + consoleNumber,
+                contentType: 'application/html ; charset:utf-8',
+                type: 'GET',
+                dataType: 'html',
+                success: function (result) {
+                    model.replaceWith(result);
+                }
+            });
+        }
+
+        function showMessage(msg) {
+            $("#UpdateTargetId").text(msg);
+            setTimeout(function () { $("#UpdateTargetId").text(''); }, 7000);
+        }
+    </script>
+}

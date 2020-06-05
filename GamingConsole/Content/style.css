@@ -1,0 +1,39 @@
+body{
+    font-family: 'Raleway', sans-serif;
+}
+
+.console-sec{
+    border: 1px #d1d1d1 solid;
+    border-bottom-width: 5px;
+    border-radius: 3px;
+}
+.score-section{
+    background: #333333;
+    color: #d1d1d1;
+    border-radius: 3px;
+}
+.score-section span{
+    font-weight: 800;
+    font-size: 44px;
+    line-height: 40px;
+}
+.score-section hr{
+    border-color: #d1d1d1;
+}
+.score-section p{
+    line-height: 12px;
+}
+.console-sec .btn{
+    font-size: 40px;
+    line-height: 28px;
+}
+.console-sec.vertical-type .score-section,
+.console-sec.vertical-type .score-section span{
+    line-height: 30px;
+}
+
+.btnf .btn {
+    font-size: 1rem;
+    line-height: 0.5;
+
+}

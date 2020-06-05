@@ -1,0 +1,146 @@
+﻿@model GamingConsole.Models.BasketBallBoard
+@{
+    ViewBag.Title = "Basket Ball Console new";
+}
+
+<h2>Basket Ball Console New</h2>
+<hr />
+@{
+    var teamOneScoreIncreaseId = @Model.ConsoleNumber + "_TeamOneScoreIncreaseId";
+    var teamOneScoreValId = @Model.ConsoleNumber + "_TeamOneScoreValId";
+    var teamOneScoreDecreaseId = @Model.ConsoleNumber + "_TeamOneScoreDecreaseId";
+
+    var teamTwoScoreIncreaseId = @Model.ConsoleNumber + "_TeamTwoScoreIncreaseId";
+    var teamTwoScoreValId = @Model.ConsoleNumber + "_TeamTwoScoreValId";
+    var teamTwoScoreDecreaseId = @Model.ConsoleNumber + "_TeamTwoScoreDecreaseId";
+}
+
+<div id="mainContainer" data-lang="en" class="outer-wrap">
+    <div class="inner-wrap">
+        <div class="container mb-3" dir="ltr">
+            <div class="row">
+                <div class="col-sm-12 my-3">
+                    <div class="row">
+                        <!-- Console section starts -->
+                        <div class="col-sm-4">
+                            <div class="console-sec p-3 text-center">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h3>Console Number #@Model.ConsoleNumber</h3>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="score-section p-3 mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    Score
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <span>
+                                                        <span id="@teamOneScoreValId">@Model.TeamOneScore</span> -
+                                                        <span id="@teamTwoScoreValId">@Model.TeamTwoScore</span>
+                                                    </span>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <hr />
+                                                    <p>Console Name #@Model.ConsoleName</p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        Status: @Model.Status
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="p-3">
+                                            <div class="row">
+                                                <div class="col-sm-5 border p-2">
+                                                    Team 01 <br />
+                                                    <button id="@teamOneScoreDecreaseId" class="btn btn-danger">-</button>
+                                                    <button id="@teamOneScoreIncreaseId" class="btn btn-success">+</button>
+                                                </div>
+                                                <div class="col-sm-2"> </div>
+                                                <div class="col-sm-5 border p-2">
+                                                    Team 02 <br />
+                                                    <button id="@teamTwoScoreDecreaseId" class="btn btn-danger">-</button>
+                                                    <button id="@teamTwoScoreIncreaseId" class="btn btn-success">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Console section ends -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section JavaScript{
+
+    <script type="text/javascript">
+        $(function () {
+
+            var ConsoleNumber = @Model.ConsoleNumber;
+
+            $('#@teamOneScoreIncreaseId').click(function () {
+                var data = {
+                    ConsoleNumber: ConsoleNumber,
+                    IsTeamOne: true,
+                    IsIncrease: true
+                };
+                updateMainBoard(data);
+            });
+
+            $('#@teamTwoScoreIncreaseId').click(function () {
+                var data = {
+                    ConsoleNumber: ConsoleNumber,
+                    IsTeamOne: false,
+                     IsIncrease: true
+                };
+                updateMainBoard(data);
+            });
+
+             $('#@teamOneScoreDecreaseId').click(function () {
+                var data = {
+                    ConsoleNumber: ConsoleNumber,
+                    IsTeamOne: true,
+                    IsIncrease: false
+                };
+                updateMainBoard(data);
+            });
+
+            $('#@teamTwoScoreDecreaseId').click(function () {
+                var data = {
+                    ConsoleNumber: ConsoleNumber,
+                    IsTeamOne: false,
+                    IsIncrease: false
+                };
+                updateMainBoard(data);
+            });
+
+        });
+
+        function updateMainBoard(data) {
+            console.log(data);
+            $.ajax({
+                url: '/BasketBallConsole/PushDataToMainBoard',
+                contentType: 'application/json ; charset:utf-8',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: function (result) {
+                    if (result.status == "200") {
+                        $('#@teamOneScoreValId').text(result.teamInfo.TeamOneScore);
+                        $('#@teamTwoScoreValId').text(result.teamInfo.TeamTwoScore);
+                    } else {
+                        alert(result.message);
+                    }
+                }
+            });
+        }
+    </script>
+}

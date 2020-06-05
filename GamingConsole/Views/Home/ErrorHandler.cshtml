@@ -1,0 +1,10 @@
+﻿@model string
+
+<hgroup>
+    <h1>Error.</h1>
+    <h2>An error occurred while processing your request.</h2>
+    <h4>Error Details : <b>@ViewBag.ErrorMessage</b></h4>
+</hgroup>
+<div>
+    @Html.ActionLink("Back to Main Board","Index","MainBoard")
+</div>

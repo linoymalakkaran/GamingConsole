@@ -1,0 +1,50 @@
+﻿@model GamingConsole.Models.BasketBallBoard
+
+@{
+    var dynamicRowId = "dataModel_" + Model.ConsoleNumber;
+}
+
+<div id="@dynamicRowId" class="col-sm-12">
+    <div class="console-sec vertical-type p-3 mb-3">
+        <div class="row">
+            <div class="col-sm-2">
+                <h3 class="p-3">Console Number #@Model.ConsoleNumber</h3>
+            </div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <h3 class="p-3">Console Name #@Model.ConsoleName</h3>
+                </div>
+                <div class="row">
+                    <h5 class="p-3">Console Status #@Model.Status</h5>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="score-section p-3 mb-3">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            Score
+                        </div>
+                        <div class="col-sm-9">
+                            <span>@Model.TeamOneScore - @Model.TeamTwoScore</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-sm-3 btnf">
+                @Html.ActionLink("Open New Console", "New", "BasketBallConsole",
+                    new { ConsoleNumber = Model.ConsoleNumber },
+                    new { @class = "btn btn-primary", role = "button", target = "_blank" })
+                <br />
+                @Html.ActionLink("Open Old Console", "Old", "BasketBallConsole",
+                   new { ConsoleNumber = Model.ConsoleNumber },
+                   new { @class = "btn btn-primary", role = "button", target = "_blank" })
+                <br />
+                <button class="btn btn-primary" onclick="HttpPost('Activate', @Model.ConsoleNumber)">Activate Console</button>
+                <button class="btn btn-primary" onclick="HttpPost('DeActivate', @Model.ConsoleNumber)">De-Activate Console</button>
+                <button class="btn btn-light" onclick="HttpPost('ResetScores', @Model.ConsoleNumber)">Reset Scores</button>
+                <button class="btn btn-danger" onclick="HttpPost('Delete', @Model.ConsoleNumber)">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
